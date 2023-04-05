@@ -8,6 +8,6 @@ Invoking `wordify` would involve the following piece of code:
 ```go
 func main() {
     number := 21_324
-    inWords, err := wordify.Int(number) // would return `veintiún mil trecientos veinticuatro`
+    inWords, err := wordify.Int(number) // would return `veintiún mil trescientos veinticuatro`
 }
 ```
