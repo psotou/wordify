@@ -1,12 +1,9 @@
 package wordify
 
 import (
-	"errors"
 	"math"
 	"strings"
 )
-
-var ErrIsNegative = errors.New("number must be positive")
 
 type unidad uint8
 
