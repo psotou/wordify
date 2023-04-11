@@ -152,7 +152,7 @@ func (c centena) String() string {
 	}[toIdx[c]]
 }
 
-// oom: [o]rders [o]f [m]agnitud group
+// oom: [o]rders [o]f [m]agnitud
 type oom uint8
 
 const (
@@ -162,11 +162,12 @@ const (
 	milesDeMillones
 )
 
-// useful key words to build the number word
+// useful keywords to build the number word
 const (
 	and       string = " y "
 	space     string = " "
 	un        string = "un"
+	menos     string = "menos"
 	hundred   string = "cien"
 	twentyone string = "veintiún"
 	thousand  string = "mil"
@@ -174,20 +175,26 @@ const (
 	millions  string = "millones"
 )
 
-// Int return the word representation of a given integer number
-// from 0 up to 999_999_999_999 in Spanish
-func Int(number int) (*string, error) {
-	if number < 0 {
-		return nil, ErrIsNegative
+// Int returns the Spanish word representation of a given integer number
+// ranging from -999_999_999_999 up to 999_999_999_999
+func Int(num int) string {
+	var (
+		number      int
+		spanishWord string
+	)
+	if num < 0 {
+		number = -1 * num
+		spanishWord += menos + space
+	} else {
+		number = num
 	}
 	numLen := numLenght(number)
-	// since numbers are grouped into powers of ten like
+	// numbers are grouped into powers of ten according to:
 	//    10^(3p)
-	// with p in {0, 1, 2, ..., n}
-	// So that,
-	// Group 1: 10^(3*0) < numbers < 10^(3*1)
-	// Group 2: 10^(3*1) < numbers < 10^(3*2)
-	// Group N: 10^(3*(N-1)) < numbers < 10^(3*N)
+	// with p in {0, 1, 2, ..., n} so that,
+	// Group 1: 10^(3*0)     <= numbers < 10^(3*1)
+	// Group 2: 10^(3*1)     <= numbers < 10^(3*2)
+	// Group N: 10^(3*(N-1)) <= numbers < 10^(3*N)
 	oomGroups := make(map[oom]int)
 	for i := 1; i <= numLen/3; i++ {
 		// algorithm to store numbers according to their corresponding group:
@@ -208,21 +215,22 @@ func Int(number int) (*string, error) {
 	milesRes := ""
 	millonesRes := ""
 	milesDeMillonesRes := ""
-	for k, v := range oomGroups {
-		switch k {
+	for group, numbers := range oomGroups {
+		switch group {
 		case cientos:
-			cientosRes = numberToWords(v, "")
+			cientosRes = numberToWords(numbers, "")
 		case miles:
-			milesRes = numberToWords(v, thousand)
+			milesRes = numberToWords(numbers, thousand)
 		case millones:
-			millonesRes = numberToWords(v, millions)
+			millonesRes = numberToWords(numbers, millions)
 		case milesDeMillones:
-			milesDeMillonesRes = numberToWords(v, thousand)
+			milesDeMillonesRes = numberToWords(numbers, thousand)
 		}
 	}
 
-	inWords := strings.TrimSpace(milesDeMillonesRes + space + millonesRes + space + milesRes + space + cientosRes)
-	return &inWords, nil
+	spanishWord += strings.TrimSpace(milesDeMillonesRes + space + millonesRes + space + milesRes + space + cientosRes)
+
+	return spanishWord
 }
 
 func numberToWords(number int, orderOfMag string) string {
@@ -251,12 +259,12 @@ func numberToWords(number int, orderOfMag string) string {
 		numberInWords = ""
 	} else if number == 1 {
 		numberInWords = numberIsOne
-	} else if number == 100 {
-		numberInWords = hundred + space + orderOfMag
 	} else if number < 30 && number%100 == 21 {
 		numberInWords = numberIsTwentyOne + space + orderOfMag
 	} else if number < 30 {
 		numberInWords = unidad(number).String() + space + orderOfMag
+	} else if number == 100 {
+		numberInWords = hundred + space + orderOfMag
 	} else if number < 100 && number >= 30 && uni == 0 {
 		numberInWords = decena(dec).String() + space + orderOfMag
 	} else if number < 100 && number >= 30 && uni == 1 {

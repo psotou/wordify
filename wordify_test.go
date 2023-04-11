@@ -1,7 +1,6 @@
 package wordify_test
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/psotou/wordify"
@@ -16,13 +15,13 @@ func TestWordify(t *testing.T) {
 		}{
 			{
 				Case:  "número menor a 30",
-				Input: 27,
-				Want:  "veintisiete",
+				Input: -27,
+				Want:  "menos veintisiete",
 			},
 			{
 				Case:  "número mayor o igual a 30 y menores que 100",
-				Input: 83,
-				Want:  "ochenta y tres",
+				Input: -83,
+				Want:  "menos ochenta y tres",
 			},
 			{
 				Case:  "número mayor o igual a 30 y menores que 100 que terminen en 0",
@@ -52,8 +51,8 @@ func TestWordify(t *testing.T) {
 		}
 
 		for _, tc := range tests {
-			got, _ := wordify.Int(tc.Input)
-			if *got != tc.Want {
+			got := wordify.Int(tc.Input)
+			if got != tc.Want {
 				t.Errorf("\ngot : %v\nwant: %v\n", got, tc.Want)
 			}
 		}
@@ -93,8 +92,8 @@ func TestWordify(t *testing.T) {
 		}
 
 		for _, tc := range tests {
-			got, _ := wordify.Int(tc.Input)
-			if *got != tc.Want {
+			got := wordify.Int(tc.Input)
+			if got != tc.Want {
 				t.Errorf("\ngot : %v\nwant: %v\n", got, tc.Want)
 			}
 		}
@@ -138,8 +137,8 @@ func TestWordify(t *testing.T) {
 		}
 
 		for _, tc := range tests {
-			got, _ := wordify.Int(tc.Input)
-			if *got != tc.Want {
+			got := wordify.Int(tc.Input)
+			if got != tc.Want {
 				t.Errorf("\ngot : %v\nwant: %v\n", got, tc.Want)
 			}
 		}
@@ -179,18 +178,10 @@ func TestWordify(t *testing.T) {
 		}
 
 		for _, tc := range tests {
-			got, _ := wordify.Int(tc.Input)
-			if *got != tc.Want {
+			got := wordify.Int(tc.Input)
+			if got != tc.Want {
 				t.Errorf("\ngot : %v\nwant: %v\n", got, tc.Want)
 			}
-		}
-	})
-
-	t.Run("Número negativo genera error", func(t *testing.T) {
-		test := -23_034
-		_, err := wordify.Int(test)
-		if !errors.Is(err, wordify.ErrIsNegative) {
-			t.Errorf("\nshould throw error %v\n", wordify.ErrIsNegative.Error())
 		}
 	})
 }
